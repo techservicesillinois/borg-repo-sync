@@ -136,6 +136,22 @@ files = [
 ]
 ```
 
+### Overriding `.borg.template.toml` with `.borg.toml`
+
+If a file specified by `.borg.template.toml` in the template repository should
+not be synced; it can be added to `skip_files` in the `template` section of
+the local `.borg.toml` file.
+
+With the following in `.borg.toml`, `.gitignore` will not be compared or updated,
+even if specified in the template repository `.borg.template.toml`:
+
+```toml
+[template]
+skip_files = [
+    ".gitignore",
+]
+```
+
 ## Data Sources
 
 |Data Store|Data Type|Sensitivity|Notes|
