@@ -1,4 +1,3 @@
-VENV_PYTHON:=.venv/bin/python
 SRCS:=$(shell find src tests -name '*.py')
 
 all: test
