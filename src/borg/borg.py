@@ -160,14 +160,9 @@ def get_files_to_compare(local_config: dict, template_config:dict):
         The template config is used to determine which files are included.
         Any file from the template config may be configured locally to be skipped.
     '''
-    files = template_config.get('template')['files']
-    skip_files = local_config.get('template', {}).get('skip_files', [])
-
-    for skip in skip_files:
-        if skip in files:
-            files.remove(skip)
-    files.sort() # sort alphabetically
-    return files
+    files = set(template_config.get('template')['files'])
+    skip_files = set(local_config.get('template', {}).get('skip_files', []))
+    return sorted(files - skip_files)
 
 def main():
     parser = init_parser()
