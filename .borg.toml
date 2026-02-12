@@ -3,5 +3,5 @@ url = 'https://raw.githubusercontent.com/techservicesillinois/secdev-template-py
 # Additional configuration will be loaded from `<url>/.borg.template.toml`
 [template]
 skip_files = [
-    ".gitignore",
+     ".gitignore",
 ]
