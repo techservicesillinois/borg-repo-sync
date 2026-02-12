@@ -24,7 +24,8 @@ import requests
 
 TMPDIR = tempfile.TemporaryDirectory(prefix='borg')
 
-TMP_FILES = {}
+# TMP_FILES = {}
+TMP_FILES: dict[str, list] = {}
 
 logger = logging.getLogger(__name__)
 
@@ -159,11 +160,13 @@ def exit_if_missing(file_path):
 
 
 def get_files_to_compare(local_config: dict, template_config: dict):
-    '''Returns a list of files to compare, based on the local and remote template configs.
+    '''Returns a list of files to compare, based on the local and remote
+        template configs.
         The template config is used to determine which files are included.
-        Any file from the template config may be configured locally to be skipped.
+        Any file from the template config may be configured locally to be
+        skipped.
     '''
-    files = set(template_config.get('template')['files'])
+    files = set(template_config.get('template', {}).get('files', []))
     skip_files = set(local_config.get('template', {}).get('skip_files', []))
     return sorted(files - skip_files)
 
@@ -176,7 +179,7 @@ def main():
         logging.getLogger(__name__).addHandler(
             logging.StreamHandler(sys.stdout))
         logging.getLogger(__name__).setLevel(logging.DEBUG)
-        logger.debug(f"Called with --debug. Printing verbose output.")
+        logger.debug("Called with --debug. Printing verbose output.")
 
     if '.git' not in os.listdir(os.curdir):
         print("borg must run from repository root.")
@@ -185,15 +188,11 @@ def main():
     config = tomllib.load(args.config)
     template_config = None
 
-    if args.make_target:
-        target = splitext(basename(args.make_target.name))[0]
-        print(f"{target}: {' '.join(FILES)}", file=args.make_target)
-
     url = config.get('source').get('url')
 
     if (not url.endswith('/')):
-        print(
-            f"Remote URL must end in `/`: {url}. Please correct `url` in `.borg.toml`.")
+        print(f"Remote URL must end in `/`: {url}."
+              "Please correct `url` in `.borg.toml`.")
         exit(1)
 
     if not config.get('template') or not config.get('template').get('files'):
@@ -207,6 +206,11 @@ def main():
         template_config = tomllib.load(open(template_config_file, 'rb'))
 
     files_from_config = get_files_to_compare(config, template_config)
+
+    if args.make_target:
+        target = splitext(basename(args.make_target.name))[0]
+        print(f"{target}: {' '.join(files_from_config)}",
+              file=args.make_target)
 
     for path in files_from_config:
         if args.source_dir:
