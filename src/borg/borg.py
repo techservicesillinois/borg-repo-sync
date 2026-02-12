@@ -28,6 +28,7 @@ TMP_FILES = {}
 
 logger = logging.getLogger(__name__)
 
+
 def remote_download(url, path):
     '''Download files from remote url to tmpdir. '''
 
@@ -127,13 +128,13 @@ def init_parser():
         action=argparse.BooleanOptionalAction,
         help="Print verbose debug output")
     parser.add_argument(
-            "-m",
-            "--make-target",
-            metavar="TARGET",
-            type=MakeDependencyFile('w'),
-            help="Writes a Makefile dependency TARGET.d file: "
-                 "TARGET.d will configure the TARGET to depend on "
-                 "the files checked by borg compare.")
+        "-m",
+        "--make-target",
+        metavar="TARGET",
+        type=MakeDependencyFile('w'),
+        help="Writes a Makefile dependency TARGET.d file: "
+        "TARGET.d will configure the TARGET to depend on "
+        "the files checked by borg compare.")
     subparsers = parser.add_subparsers()
 
     update = subparsers.add_parser('update', aliases=['up'])
@@ -149,13 +150,15 @@ def init_parser():
 
     return parser
 
+
 def exit_if_missing(file_path):
     if not os.path.isfile(file_path):
         print(f"Missing file in `--source-dir`: {file_path}",
               file=sys.stderr)
         exit(1)
 
-def get_files_to_compare(local_config: dict, template_config:dict):
+
+def get_files_to_compare(local_config: dict, template_config: dict):
     '''Returns a list of files to compare, based on the local and remote template configs.
         The template config is used to determine which files are included.
         Any file from the template config may be configured locally to be skipped.
@@ -164,12 +167,14 @@ def get_files_to_compare(local_config: dict, template_config:dict):
     skip_files = set(local_config.get('template', {}).get('skip_files', []))
     return sorted(files - skip_files)
 
+
 def main():
     parser = init_parser()
     args = parser.parse_args()
 
-    if(args.debug):
-        logging.getLogger(__name__).addHandler(logging.StreamHandler(sys.stdout))
+    if (args.debug):
+        logging.getLogger(__name__).addHandler(
+            logging.StreamHandler(sys.stdout))
         logging.getLogger(__name__).setLevel(logging.DEBUG)
         logger.debug(f"Called with --debug. Printing verbose output.")
 
@@ -186,14 +191,15 @@ def main():
 
     url = config.get('source').get('url')
 
-    if(not url.endswith('/')):
-       print(f"Remote URL must end in `/`: {url}. Please correct `url` in `.borg.toml`.")
-       exit(1)
-
+    if (not url.endswith('/')):
+        print(
+            f"Remote URL must end in `/`: {url}. Please correct `url` in `.borg.toml`.")
+        exit(1)
 
     if not config.get('template') or not config.get('template').get('files'):
         if args.source_dir:
-            template_config_file = os.path.join(args.source_dir, '.borg.template.toml')
+            template_config_file = os.path.join(
+                args.source_dir, '.borg.template.toml')
             exit_if_missing(template_config_file)
         else:
             template_config_file = remote_download(url, '.borg.template.toml')
@@ -211,10 +217,10 @@ def main():
 
         TMP_FILES[path] = file_path
 
-
     args.gitattribute_files = []
     config_generate = template_config.get('generate')
-    config_gitattr = config_generate.get('gitattributes') if config_generate else None
+    config_gitattr = config_generate.get(
+        'gitattributes') if config_generate else None
 
     if config_gitattr:
         args.gitattribute_files += config_gitattr['files']
