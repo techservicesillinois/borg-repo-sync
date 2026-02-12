@@ -155,6 +155,20 @@ def exit_if_missing(file_path):
               file=sys.stderr)
         exit(1)
 
+def get_files_to_compare(local_config: dict, template_config:dict):
+    '''Returns a list of files to compare, based on the local and remote template configs.
+        The template config is used to determine which files are included.
+        Any file from the template config may be configured locally to be skipped.
+    '''
+    files = template_config.get('template')['files']
+    skip_files = local_config.get('template', {}).get('skip_files', [])
+
+    for skip in skip_files:
+        if skip in files:
+            files.remove(skip)
+    files.sort() # sort alphabetically
+    return files
+
 def main():
     parser = init_parser()
     args = parser.parse_args()
@@ -191,7 +205,9 @@ def main():
 
         template_config = tomllib.load(open(template_config_file, 'rb'))
 
-    for path in template_config.get('template')['files']:
+    files_from_config = get_files_to_compare(config, template_config)
+
+    for path in files_from_config:
         if args.source_dir:
             file_path = os.path.join(args.source_dir, path)
             exit_if_missing(file_path)
