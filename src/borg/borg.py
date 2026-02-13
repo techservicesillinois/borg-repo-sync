@@ -84,14 +84,28 @@ def update_repo(args):
 
 
 def generate(args):
-    msg = "# Ignore files managed by borg in Github PR reviews\n"
-    files = args.gitattribute_files
     with open(args.FILE, "w") as file:
         if args.FILE == '.gitattributes':
+            msg = "# Ignore files managed by borg in Github PR reviews\n"
             file.write(msg)
+            files = args.gitattribute_files
             if len(files) > 0:
                 file.write(' linguist-generated\n'.join(files))
                 file.write(' linguist-generated\n')
+            else:
+                print("Nothing to write for {args.FILE}")
+
+        if args.FILE == '.check_template.d':
+            # Writes a Makefile dependency TARGET.d file:
+            # "TARGET.d will configure the TARGET to depend on "
+            # "the files checked by borg compare.")
+
+            files = args.check_template_files
+            if len(files) > 0:
+                file.write(f"{args.FILE}: {' '.join(files)}")
+            else:
+                print("Nothing to write for {args.FILE}")
+
 
 
 def directory(path):
@@ -128,14 +142,7 @@ def init_parser():
         "--debug",
         action=argparse.BooleanOptionalAction,
         help="Print verbose debug output")
-    parser.add_argument(
-        "-m",
-        "--make-target",
-        metavar="TARGET",
-        type=MakeDependencyFile('w'),
-        help="Writes a Makefile dependency TARGET.d file: "
-        "TARGET.d will configure the TARGET to depend on "
-        "the files checked by borg compare.")
+
     subparsers = parser.add_subparsers()
 
     update = subparsers.add_parser('update', aliases=['up'])
@@ -145,7 +152,7 @@ def init_parser():
     compare.set_defaults(func=compare_repo)
 
     gen = subparsers.add_parser('generate', aliases=['gen'])
-    gen.add_argument('FILE', choices=('.gitattributes', ),
+    gen.add_argument('FILE', choices=('.gitattributes', '.check_template.d'),
                      help='Build certain template files')
     gen.set_defaults(func=generate)
 
@@ -206,11 +213,7 @@ def main():
         template_config = tomllib.load(open(template_config_file, 'rb'))
 
     files_from_config = get_files_to_compare(config, template_config)
-
-    if args.make_target:
-        target = splitext(basename(args.make_target.name))[0]
-        print(f"{target}: {' '.join(files_from_config)}",
-              file=args.make_target)
+    args.check_template_files = files_from_config
 
     for path in files_from_config:
         if args.source_dir:
@@ -231,6 +234,7 @@ def main():
 
         if config_gitattr['include_template_files']:
             args.gitattribute_files += template_config.get('template')['files']
+
 
     if hasattr(args, 'func'):
         args.func(args)
