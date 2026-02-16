@@ -24,7 +24,6 @@ import requests
 
 TMPDIR = tempfile.TemporaryDirectory(prefix='borg')
 
-# TMP_FILES = {}
 TMP_FILES: dict[str, list] = {}
 
 logger = logging.getLogger(__name__)
