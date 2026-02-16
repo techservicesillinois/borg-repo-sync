@@ -49,3 +49,12 @@ local_scheme = "dirty-tag"
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["borg*"]
+
+[dependency-groups]
+dev = [
+    "autopep8>=2.3.2",
+    "flake8>=7.3.0",
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "types-requests>=2.32.4.20260107",
+]

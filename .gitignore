@@ -32,6 +32,7 @@ __pycache__/
 .python-version
 *.egg-info
 *.eggs
+uv.lock
 
 # Python Coverage.py
 .coverage
