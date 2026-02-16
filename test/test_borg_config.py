@@ -1,6 +1,5 @@
 '''Test loading borg config files.'''
 
-# Imports - mock and borg
 from borg.borg import get_files_to_compare
 
 
