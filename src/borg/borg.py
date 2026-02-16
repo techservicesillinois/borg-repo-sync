@@ -127,14 +127,6 @@ def init_parser():
         "--debug",
         action=argparse.BooleanOptionalAction,
         help="Print verbose debug output")
-    parser.add_argument(
-        "-m",
-        "--make-target",
-        metavar="TARGET",
-        type=MakeDependencyFile('w'),
-        help="Writes a Makefile dependency TARGET.d file: "
-        "TARGET.d will configure the TARGET to depend on "
-        "the files checked by borg compare.")
     subparsers = parser.add_subparsers()
 
     update = subparsers.add_parser('update', aliases=['up'])
@@ -142,6 +134,15 @@ def init_parser():
 
     compare = subparsers.add_parser('compare', aliases=['cmp'])
     compare.set_defaults(func=compare_repo)
+    compare.add_argument(
+        "-m",
+        "--make-target",
+        metavar="TARGET",
+        type=MakeDependencyFile('w'),
+        help="Writes a Makefile dependency TARGET.d file: "
+        "TARGET.d will configure the TARGET to depend on "
+        "the files checked by borg compare.")
+
 
     gen = subparsers.add_parser('generate', aliases=['gen'])
     gen.add_argument('FILE', choices=('.gitattributes', ),
