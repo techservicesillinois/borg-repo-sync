@@ -143,7 +143,6 @@ def init_parser():
         "TARGET.d will configure the TARGET to depend on "
         "the files checked by borg compare.")
 
-
     gen = subparsers.add_parser('generate', aliases=['gen'])
     gen.add_argument('FILE', choices=('.gitattributes', ),
                      help='Build certain template files')
@@ -207,7 +206,7 @@ def main():
 
     files_from_config = get_files_to_compare(config, template_config)
 
-    if args.make_target:
+    if hasattr(args, 'make_target') and args.make_target:
         target = splitext(basename(args.make_target.name))[0]
         print(f"{target}: {' '.join(files_from_config)}",
               file=args.make_target)
