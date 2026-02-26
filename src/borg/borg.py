@@ -202,6 +202,7 @@ def main():
         else:
             template_config_file = remote_download(url, '.borg.template.toml')
 
+        logger.debug(f'Load configuration: {template_config_file}')
         template_config = tomllib.load(open(template_config_file, 'rb'))
 
     files_from_config = get_files_to_compare(config, template_config)
@@ -226,7 +227,7 @@ def main():
         'gitattributes') if config_generate else None
 
     if config_gitattr:
-        args.gitattribute_files += config_gitattr['files']
+        args.gitattribute_files += config_gitattr.get('files', [])
 
         if config_gitattr['include_template_files']:
             args.gitattribute_files += template_config.get('template')['files']
