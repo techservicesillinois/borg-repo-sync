@@ -48,7 +48,7 @@ files = [
 files = [
     # All machine generated files
     ".gitattributes",
-    "requiements*.txt",
+    "requirements*.txt",
 ]
 # Include all template files above
 include_template_files = true
