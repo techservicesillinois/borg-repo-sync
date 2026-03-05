@@ -5,6 +5,7 @@ description:
 example:
     borg compare
     borg update
+    borg generate <FILE>
 """
 
 import argparse
