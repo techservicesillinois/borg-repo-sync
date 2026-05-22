@@ -59,7 +59,7 @@ will generate this `.gitattributes` file:
 ```sh
 # Ignore files managed by borg in Github PR reviews
 .gitattributes linguist-generated
-requiements*.txt linguist-generated
+requirements*.txt linguist-generated
 .gitignore linguist-generated
 .github/workflows/pr_reminder.yml linguist-generated
 .github/workflows/cleanup.yml linguist-generated
