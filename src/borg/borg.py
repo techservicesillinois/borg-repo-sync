@@ -36,6 +36,27 @@ DEFAULT_CONFIG_URL = "https://raw.githubusercontent.com/techservicesillinois" + 
 DEFAULT_CONFIG_URL = "https://raw.githubusercontent.com/techservicesillinois" + \
                 "/template_repo_sync/refs/heads/feature/default_repo/.borg.toml"
 
+
+def get_remote_config(url):
+    '''Download files from remote url to tmpdir. '''
+
+    logger.debug(f"Fetching remote config file {url}")
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        filename = join(TMPDIR.name, '.borg.toml')
+        directory = dirname(filename)
+
+        makedirs(directory, exist_ok=True)
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+    else:
+        print(f"Expected remote config file is missing: {url}")
+        print(f"HTTP Status code: {response.status_code}")
+        exit(1)
+
+    return filename
+
 def remote_download(url, path):
     '''Download files from remote url to tmpdir. '''
 
@@ -202,17 +223,23 @@ def main():
         config_file = args.config
     else:
         logger.debug(f"borg configured from {args.config_url}")
-        config_file = remote_download(args.config_url, '.borg.toml')
+        config_file = get_remote_config(args.config_url)
 
-    with open(args.config, 'rb') as config_file:
+    with open(config_file, 'rb') as config_file:
         config = tomllib.load(config_file)
 
     template_config = None
 
-    url = config.get('template').get('files_url')
+    files_url = config.get('template').get('files_url')
 
-    if (not url.endswith('/')):
-        print(f"Remote URL must end in `/`: {url}."
+    if not files_url:
+        print(f"borg config must provide `files_url`. "
+              "Please add `files_url` to [template] in `.borg.toml`.")
+        exit(1)
+
+
+    if (not files_url.endswith('/')):
+        print(f"Remote files URL must end in `/`: {url}."
               "Please correct `url` in `.borg.toml`.")
         exit(1)
 
@@ -228,7 +255,7 @@ def main():
             file_path = os.path.join(args.source_dir, path)
             exit_if_missing(file_path)
         else:
-            file_path = remote_download(url, path)
+            file_path = remote_download(files_url, path)
 
         TMP_FILES[path] = file_path
 
