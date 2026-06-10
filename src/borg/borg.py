@@ -117,6 +117,13 @@ def init_parser():
         type=directory,
         help="Local directory instead of remote git repository")
     parser.add_argument(
+        "-u",
+        "--config-url",
+        type=str,
+        default="https://raw.githubusercontent.com/techservicesillinois" +
+                "/secdev-template-python/refs/heads/main/.borg.template.toml",
+        help="Remote configuration file")
+    parser.add_argument(
         "-c",
         "--config",
         default=".borg.toml",
@@ -186,6 +193,10 @@ def main():
         exit(1)
 
     config = tomllib.load(args.config)
+    if not config:
+        remote_config = remote_download(args.config_url)
+        config = tomllib.load(remote_config)
+
     template_config = None
 
     url = config.get('source').get('url')
