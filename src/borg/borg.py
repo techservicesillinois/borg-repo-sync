@@ -30,6 +30,11 @@ TMP_FILES: dict[str, list] = {}
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_CONFIG_URL = "https://raw.githubusercontent.com/techservicesillinois" + \
+                "/template_repo_sync/refs/heads/main/.borg.toml"
+# For testing
+DEFAULT_CONFIG_URL = "https://raw.githubusercontent.com/techservicesillinois" + \
+                "/template_repo_sync/refs/heads/feature/default_repo/.borg.toml"
 
 def remote_download(url, path):
     '''Download files from remote url to tmpdir. '''
@@ -121,8 +126,7 @@ def init_parser():
         "-u",
         "--config-url",
         type=str,
-        default="https://raw.githubusercontent.com/techservicesillinois" +
-                "/template_repo_sync/refs/heads/main/.borg.toml",
+        default=DEFAULT_CONFIG_URL,
         help="Remote configuration file")
     parser.add_argument(
         "-c",
