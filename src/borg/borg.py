@@ -33,11 +33,6 @@ logger = logging.getLogger(__name__)
 DEFAULT_CONFIG_URL = "https://raw.githubusercontent.com/techservicesillinois" + \
                 "/template_repo_sync/refs/heads/main/example_config/basic.borg.toml"
 
-# TODO: (Remove me this line before merge)
-DEFAULT_CONFIG_URL = "https://raw.githubusercontent.com/techservicesillinois" + \
-                "/template_repo_sync/refs/heads/feature/default_repo/example_config/basic.borg.toml"
-
-
 def get_remote_config(url):
     '''Download files from remote url to tmpdir. '''
 
