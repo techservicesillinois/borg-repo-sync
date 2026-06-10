@@ -1,7 +1,15 @@
-[source]
-url = 'https://raw.githubusercontent.com/techservicesillinois/secdev-template-python/refs/heads/main/'
-# Additional configuration will be loaded from `<url>/.borg.template.toml`
+# The default borg config is hosted at 
+# https://raw.githubusercontent.com/techservicesillinois/template_repo_sync/refs/heads/main/.borg.toml
+# Borg config can be overridden either by an alternate local or remote .borg.toml
+
 [template]
-skip_files = [
-     ".gitignore",
+files_url = 'https://raw.githubusercontent.com/techservicesillinois/secdev-template-python/refs/heads/main/'
+files = [
+    ".github/workflows/pr_reminder.yml",
+    ".github/workflows/cleanup.yml",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
 ]
+[generate.gitattributes]
+# Include all template files above
+include_template_files = true
