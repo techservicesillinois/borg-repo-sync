@@ -19,6 +19,7 @@ import tomllib
 
 from os import makedirs
 from os.path import basename, dirname, join, splitext
+from pathlib import Path
 from urllib.parse import urljoin
 
 import requests
@@ -121,14 +122,14 @@ def init_parser():
         "--config-url",
         type=str,
         default="https://raw.githubusercontent.com/techservicesillinois" +
-                "/secdev-template-python/refs/heads/main/.borg.template.toml",
+                "/template_repo_sync/refs/heads/main/.borg.toml",
         help="Remote configuration file")
     parser.add_argument(
         "-c",
         "--config",
         default=".borg.toml",
         metavar="FILE",
-        type=argparse.FileType('rb'),
+        type=str,
         help="Open TOML config file")
     parser.add_argument(
         "-d",
@@ -192,10 +193,16 @@ def main():
         print("borg must run from repository root.")
         exit(1)
 
-    config = tomllib.load(args.config)
-    if not config:
-        remote_config = remote_download(args.config_url)
-        config = tomllib.load(remote_config)
+    config_file = None
+    if Path(args.config).exists():
+        logger.debug(f"borg configured from {args.config}")
+        config_file = args.config
+    else:
+        logger.debug(f"borg configured from {args.config_url}")
+        config_file = remote_download(args.config_url, '.borg.toml')
+
+    with open(args.config, 'rb') as config_file:
+        config = tomllib.load(config_file)
 
     template_config = None
 
