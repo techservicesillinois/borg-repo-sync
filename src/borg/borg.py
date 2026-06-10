@@ -30,11 +30,13 @@ TMP_FILES: dict[str, list] = {}
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_CONFIG_URL = "https://raw.githubusercontent.com/techservicesillinois" + \
-                "/template_repo_sync/refs/heads/main/example_config/basic.borg.toml"
+DEFAULT_CONFIG_URL = "https://raw.githubusercontent.com/" + \
+                "techservicesillinois/template_repo_sync/refs/heads/" + \
+                "main/example_config/basic.borg.toml"
+
 
 def get_remote_config(url):
-    '''Download files from remote url to tmpdir. '''
+    '''Download remote configuration file to tmpdir.'''
 
     logger.debug(f"Fetching remote config file {url}")
     response = requests.get(url)
@@ -52,6 +54,7 @@ def get_remote_config(url):
         exit(1)
 
     return filename
+
 
 def remote_download(url, path):
     '''Download files from remote url to tmpdir. '''
@@ -224,18 +227,15 @@ def main():
     with open(config_file, 'rb') as config_file:
         config = tomllib.load(config_file)
 
-    template_config = None
-
     files_url = config.get('template').get('files_url')
 
     if not files_url:
-        print(f"borg config must provide `files_url`. "
+        print("borg config must provide `files_url`. "
               "Please add `files_url` to [template] in `.borg.toml`.")
         exit(1)
 
-
     if (not files_url.endswith('/')):
-        print(f"Remote files URL must end in `/`: {url}."
+        print(f"Remote files URL must end in `/`: {files_url}."
               "Please correct `url` in `.borg.toml`.")
         exit(1)
 
