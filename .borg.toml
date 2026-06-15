@@ -1,0 +1,13 @@
+# This file configures `borg` to compare files to the Illinois Cybersecurity Development default template
+
+[template]
+files_url = "https://raw.githubusercontent.com/techservicesillinois/secdev-template-repository/refs/heads/main/"
+files = [
+    ".github/workflows/pr_reminder.yml",
+    ".github/workflows/cleanup.yml",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
+]
+[generate.gitattributes]
+# Include all template files above
+include_template_files = true
