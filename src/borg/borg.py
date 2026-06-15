@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_CONFIG_URL = "https://raw.githubusercontent.com/" + \
                 "techservicesillinois/template_repo_sync/refs/heads/" + \
-                "main/example_config/basic.borg.toml"
+                "main/default.borg.toml"
 
 
 def get_remote_config(url):
