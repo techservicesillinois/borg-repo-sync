@@ -2,7 +2,7 @@
 
 [template]
 # Keep these files in sync across Python repos
-files_url = https://raw.githubusercontent.com/techservicesillinois/secdev-template-python/refs/heads/main/
+files_url = "https://raw.githubusercontent.com/techservicesillinois/secdev-template-python/refs/heads/main/"
 files = [
     ".gitignore",
     ".github/workflows/pr_reminder.yml",

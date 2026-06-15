@@ -7,7 +7,7 @@
 # https://raw.githubusercontent.com/techservicesillinois/template_repo_sync/refs/heads/main/example_config/basic.borg.toml
 
 [template]
-files_url = 'https://raw.githubusercontent.com/techservicesillinois/secdev-template-python/refs/heads/main/'
+files_url = "https://raw.githubusercontent.com/techservicesillinois/secdev-template-python/refs/heads/main/"
 files = [
     ".github/workflows/pr_reminder.yml",
     ".github/workflows/cleanup.yml",
