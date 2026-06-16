@@ -55,13 +55,26 @@ It is also possible to use other GitHub branches for comparison, using a `refs/h
 
 ```
 [template]
-# To compare to an un-merged `doc/python` branch:
+# To compare to an unmerged `doc/python` branch:
 files_url = 'https://raw.githubusercontent.com/techservicesillinois/secdev-template-python/refs/heads/doc/python/'
 ```
 
 > Note: Our typical use case is public templates. But a private repository can be used, by first cloning the private repository, and then calling `borg` with `--source-dir` pointed to the local folder of the clone.
 
-When using `--source-dir`, any `.borg.toml` file is ignored.
+When using `--source-dir`, `files_url` in `.borg.toml` is ignored, and the local folder is used, instead.
+
+### Updating a template repository
+
+When updating a template repository, `borg` can complain about unmerged changes, because `.borg.toml` usually points to the `main` branch of that same repository.
+
+In these cases, it can be useful to override with the `--source-dir` option to point back at the current files.
+
+For example, regenerate `.gitattributes` from the current local files, with:
+
+```
+rm .gitattributes
+borg -s . gen .gitattributes
+```
 
 ### Generate
 
