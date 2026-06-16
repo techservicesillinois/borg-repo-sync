@@ -4,7 +4,7 @@
 # Borg config can be overridden either by an alternate local or remote .borg.toml
 
 # This file is hosted at 
-# https://raw.githubusercontent.com/techservicesillinois/template_repo_sync/refs/heads/main/example_config/basic.borg.toml
+# https://raw.githubusercontent.com/techservicesillinois/template_repo_sync/refs/heads/main/default.borg.toml
 
 [template]
 files_url = "https://raw.githubusercontent.com/techservicesillinois/secdev-template-python/refs/heads/main/"
