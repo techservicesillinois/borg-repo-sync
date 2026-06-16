@@ -9,5 +9,9 @@ files = [
     "SECURITY.md",
 ]
 [generate.gitattributes]
+files = [
+    # All machine generated files
+    ".gitattributes",
+]
 # Include all template files above
 include_template_files = true
