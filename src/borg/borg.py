@@ -31,7 +31,7 @@ TMP_FILES: dict[str, list] = {}
 logger = logging.getLogger(__name__)
 
 DEFAULT_CONFIG_URL = "https://raw.githubusercontent.com/" + \
-                "techservicesillinois/template_repo_sync/refs/heads/" + \
+                "techservicesillinois/borg_repo_sync/refs/heads/" + \
                 "main/default.borg.toml"
 
 
