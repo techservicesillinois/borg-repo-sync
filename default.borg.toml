@@ -1,3 +1,11 @@
+# This file configures `borg` with patterns fit for any Cybersecurity Development repository
+
+# This is the default configuration used by `borg` if no other configuration is given
+# Borg config can be overridden either by an alternate local or remote .borg.toml
+
+# This file is hosted at 
+# https://raw.githubusercontent.com/techservicesillinois/template_repo_sync/refs/heads/main/default.borg.toml
+
 # This file configures `borg` to compare files to the Illinois Cybersecurity Development default template
 
 [template]

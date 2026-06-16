@@ -19,6 +19,7 @@ import tomllib
 
 from os import makedirs
 from os.path import basename, dirname, join, splitext
+from pathlib import Path
 from urllib.parse import urljoin
 
 import requests
@@ -28,6 +29,31 @@ TMPDIR = tempfile.TemporaryDirectory(prefix='borg')
 TMP_FILES: dict[str, list] = {}
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_CONFIG_URL = "https://raw.githubusercontent.com/" + \
+                "techservicesillinois/borg_repo_sync/refs/heads/" + \
+                "main/default.borg.toml"
+
+
+def get_remote_config(url):
+    '''Download remote configuration file to tmpdir.'''
+
+    logger.debug(f"Fetching remote config file {url}")
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        filename = join(TMPDIR.name, '.borg.toml')
+        directory = dirname(filename)
+
+        makedirs(directory, exist_ok=True)
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+    else:
+        print(f"Expected remote config file is missing: {url}")
+        print(f"HTTP Status code: {response.status_code}")
+        exit(1)
+
+    return filename
 
 
 def remote_download(url, path):
@@ -117,11 +143,17 @@ def init_parser():
         type=directory,
         help="Local directory instead of remote git repository")
     parser.add_argument(
+        "-u",
+        "--config-url",
+        type=str,
+        default=DEFAULT_CONFIG_URL,
+        help="Remote configuration file")
+    parser.add_argument(
         "-c",
         "--config",
         default=".borg.toml",
         metavar="FILE",
-        type=argparse.FileType('rb'),
+        type=str,
         help="Open TOML config file")
     parser.add_argument(
         "-d",
@@ -159,15 +191,14 @@ def exit_if_missing(file_path):
         exit(1)
 
 
-def get_files_to_compare(local_config: dict, template_config: dict):
-    '''Returns a list of files to compare, based on the local and remote
-        template configs.
+def get_files_to_compare(config: dict):
+    '''Returns a list of files to compare - subtracting skip_files from files.
         The template config is used to determine which files are included.
         Any file from the template config may be configured locally to be
         skipped.
     '''
-    files = set(template_config.get('template', {}).get('files', []))
-    skip_files = set(local_config.get('template', {}).get('skip_files', []))
+    files = set(config.get('template', {}).get('files', []))
+    skip_files = set(config.get('template', {}).get('skip_files', []))
     return sorted(files - skip_files)
 
 
@@ -185,28 +216,30 @@ def main():
         print("borg must run from repository root.")
         exit(1)
 
-    config = tomllib.load(args.config)
-    template_config = None
+    config_file = None
+    if Path(args.config).exists():
+        logger.debug(f"borg configured from {args.config}")
+        config_file = args.config
+    else:
+        logger.debug(f"borg configured from {args.config_url}")
+        config_file = get_remote_config(args.config_url)
 
-    url = config.get('source').get('url')
+    with open(config_file, 'rb') as config_file:
+        config = tomllib.load(config_file)
 
-    if (not url.endswith('/')):
-        print(f"Remote URL must end in `/`: {url}."
+    files_url = config.get('template').get('files_url')
+
+    if not files_url:
+        print("borg config must provide `files_url`. "
+              "Please add `files_url` to [template] in `.borg.toml`.")
+        exit(1)
+
+    if (not files_url.endswith('/')):
+        print(f"Remote files URL must end in `/`: {files_url}."
               "Please correct `url` in `.borg.toml`.")
         exit(1)
 
-    if not config.get('template') or not config.get('template').get('files'):
-        if args.source_dir:
-            template_config_file = os.path.join(
-                args.source_dir, '.borg.template.toml')
-            exit_if_missing(template_config_file)
-        else:
-            template_config_file = remote_download(url, '.borg.template.toml')
-
-        logger.debug(f'Load configuration: {template_config_file}')
-        template_config = tomllib.load(open(template_config_file, 'rb'))
-
-    files_from_config = get_files_to_compare(config, template_config)
+    files_from_config = get_files_to_compare(config)
 
     if hasattr(args, 'make_target') and args.make_target:
         target = splitext(basename(args.make_target.name))[0]
@@ -218,12 +251,12 @@ def main():
             file_path = os.path.join(args.source_dir, path)
             exit_if_missing(file_path)
         else:
-            file_path = remote_download(url, path)
+            file_path = remote_download(files_url, path)
 
         TMP_FILES[path] = file_path
 
     args.gitattribute_files = []
-    config_generate = template_config.get('generate')
+    config_generate = config.get('generate')
     config_gitattr = config_generate.get(
         'gitattributes') if config_generate else None
 
@@ -231,7 +264,7 @@ def main():
         args.gitattribute_files += config_gitattr.get('files', [])
 
         if config_gitattr['include_template_files']:
-            args.gitattribute_files += template_config.get('template')['files']
+            args.gitattribute_files += config.get('template')['files']
 
     if hasattr(args, 'func'):
         args.func(args)
