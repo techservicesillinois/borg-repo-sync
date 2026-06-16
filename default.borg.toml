@@ -6,8 +6,10 @@
 # This file is hosted at 
 # https://raw.githubusercontent.com/techservicesillinois/template_repo_sync/refs/heads/main/default.borg.toml
 
+# This file configures `borg` to compare files to the Illinois Cybersecurity Development default template
+
 [template]
-files_url = "https://raw.githubusercontent.com/techservicesillinois/secdev-template-python/refs/heads/main/"
+files_url = "https://raw.githubusercontent.com/techservicesillinois/secdev-template-repository/refs/heads/main/"
 files = [
     ".github/workflows/pr_reminder.yml",
     ".github/workflows/cleanup.yml",
