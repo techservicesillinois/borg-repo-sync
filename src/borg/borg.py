@@ -219,7 +219,6 @@ def warn_on_file_contents(expect_contents: dict) -> list[str]:
                 if not expect_str in f.read():
                     warnings.append(f"{filename} does not contain expected '{expect_str}'")
 
-    # breakpoint()
     return warnings
 
 
