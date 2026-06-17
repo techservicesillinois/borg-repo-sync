@@ -8,6 +8,12 @@ files = [
     "CODE_OF_CONDUCT.md",
     "SECURITY.md",
 ]
+file_contents = [
+	['README.md', '# About'],
+	['README.md', '## Data Sources'],
+	['README.md', '## Endpoint Connections'],
+]
+
 [generate.gitattributes]
 files = [
     # All machine generated files

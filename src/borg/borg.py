@@ -90,6 +90,13 @@ def compare_repo(args):
                 differ = True
                 print(f"{filename} differs.", file=sys.stderr)
 
+    results = warn_on_file_contents(args.file_contents)
+    for warning in results:
+        print(warning, file=sys.stderr)
+
+    if len(results) > 0:
+        differ = True
+
     if differ:
         sys.exit(1)
     else:
@@ -202,6 +209,21 @@ def get_files_to_compare(config: dict):
     return sorted(files - skip_files)
 
 
+def warn_on_file_contents(expect_contents: dict) -> list[str]:
+    '''Returns False if any warnings are thrown.'''
+    warnings = []
+    for filename, expect_str in expect_contents:
+        if not os.path.isfile(filename):
+            warnings.append(f"{filename} is missing.")
+        else:
+            with open(filename, 'r') as f:
+                if expect_str not in f.read():
+                    warnings.append(
+                        f"{filename} does not contain expected '{expect_str}'")
+
+    return warnings
+
+
 def main():
     parser = init_parser()
     args = parser.parse_args()
@@ -240,6 +262,7 @@ def main():
         exit(1)
 
     files_from_config = get_files_to_compare(config)
+    args.file_contents = config.get('template', {}).get('file_contents', [])
 
     if hasattr(args, 'make_target') and args.make_target:
         target = splitext(basename(args.make_target.name))[0]
