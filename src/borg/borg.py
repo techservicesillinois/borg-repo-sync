@@ -208,6 +208,7 @@ def get_files_to_compare(config: dict):
     skip_files = set(config.get('template', {}).get('skip_files', []))
     return sorted(files - skip_files)
 
+
 def warn_on_file_contents(expect_contents: dict) -> list[str]:
     '''Returns False if any warnings are thrown.'''
     warnings = []
@@ -216,8 +217,9 @@ def warn_on_file_contents(expect_contents: dict) -> list[str]:
             warnings.append(f"{filename} is missing.")
         else:
             with open(filename, 'r') as f:
-                if not expect_str in f.read():
-                    warnings.append(f"{filename} does not contain expected '{expect_str}'")
+                if expect_str not in f.read():
+                    warnings.append(
+                        f"{filename} does not contain expected '{expect_str}'")
 
     return warnings
 
@@ -286,7 +288,6 @@ def main():
 
         if config_gitattr['include_template_files']:
             args.gitattribute_files += config.get('template')['files']
-
 
     if hasattr(args, 'func'):
         args.func(args)
