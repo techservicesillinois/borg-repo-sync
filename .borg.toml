@@ -9,8 +9,9 @@ files = [
     "SECURITY.md",
 ]
 file_contents = [
-	['COPYRIGHT.txt', 'Copyright'],
 	['README.md', '# About'],
+	['README.md', '## Data Sources'],
+	['README.md', '## Endpoint Connections'],
 ]
 
 [generate.gitattributes]

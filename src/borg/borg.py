@@ -216,7 +216,7 @@ def warn_on_file_contents(expect_contents: dict) -> list[str]:
             warnings.append(f"{filename} is missing.")
         else:
             with open(filename, 'r') as f:
-                if not expect_contents in f.readlines():
+                if not f.read().contains(expect_contents):
                     warnings.append(f"{filename} does not contain expected '{expect_str}'")
 
     # breakpoint()
