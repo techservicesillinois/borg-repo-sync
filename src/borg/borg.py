@@ -90,6 +90,13 @@ def compare_repo(args):
                 differ = True
                 print(f"{filename} differs.", file=sys.stderr)
 
+    results = warn_on_file_contents(args.file_contents)
+    for warning in results:
+        print(warning, file=sys.stderr)
+
+    if len(results) > 0:
+        differ = True
+
     if differ:
         sys.exit(1)
     else:
@@ -201,6 +208,20 @@ def get_files_to_compare(config: dict):
     skip_files = set(config.get('template', {}).get('skip_files', []))
     return sorted(files - skip_files)
 
+def warn_on_file_contents(expect_contents: dict) -> list[str]:
+    '''Returns False if any warnings are thrown.'''
+    warnings = []
+    for filename, expect_str in expect_contents:
+        if not os.path.isfile(filename):
+            warnings.append(f"{filename} is missing.")
+        else:
+            with open(filename, 'r') as f:
+                if not expect_contents in f.readlines():
+                    warnings.append(f"{filename} does not contain expected '{expect_str}'")
+
+    # breakpoint()
+    return warnings
+
 
 def main():
     parser = init_parser()
@@ -240,6 +261,7 @@ def main():
         exit(1)
 
     files_from_config = get_files_to_compare(config)
+    args.file_contents = config.get('template', {}).get('file_contents', [])
 
     if hasattr(args, 'make_target') and args.make_target:
         target = splitext(basename(args.make_target.name))[0]
@@ -265,6 +287,7 @@ def main():
 
         if config_gitattr['include_template_files']:
             args.gitattribute_files += config.get('template')['files']
+
 
     if hasattr(args, 'func'):
         args.func(args)

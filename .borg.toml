@@ -8,6 +8,11 @@ files = [
     "CODE_OF_CONDUCT.md",
     "SECURITY.md",
 ]
+file_contents = [
+	['COPYRIGHT.txt', 'Copyright'],
+	['README.md', '# About'],
+]
+
 [generate.gitattributes]
 files = [
     # All machine generated files
