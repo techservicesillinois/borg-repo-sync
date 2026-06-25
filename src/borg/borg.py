@@ -102,7 +102,7 @@ def update_repo(args):
         try:
             shutil.copyfile(tmpf, filename)
         except Exception as ex:
-            print(f"Failed to update {filename}. {ex.message}",
+            print(f"Failed to update {filename}. {ex}",
                   file=sys.stderr)
             sys.exit(1)
 
