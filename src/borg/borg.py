@@ -153,7 +153,6 @@ def init_parser():
         "-u",
         "--config-url",
         type=str,
-        default=DEFAULT_CONFIG_URL,
         help="Remote configuration file")
     parser.add_argument(
         "-c",
@@ -239,12 +238,17 @@ def main():
         exit(1)
 
     config_file = None
-    if Path(args.config).exists():
-        logger.debug(f"borg configured from {args.config}")
-        config_file = args.config
-    else:
+    if(args.config_url):
         logger.debug(f"borg configured from {args.config_url}")
         config_file = get_remote_config(args.config_url)
+    else:
+        if Path(args.config).exists():
+            logger.debug(f"borg configured from {args.config}")
+            config_file = args.config
+        else:
+            # Use default remote config if no other config is found
+            logger.debug(f"borg configured from default URL at {DEFAULT_CONFIG_URL}")
+            config_file = get_remote_config(DEFAULT_CONFIG_URL)
 
     with open(config_file, 'rb') as config_file:
         config = tomllib.load(config_file)
